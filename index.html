@@ -20,6 +20,8 @@
             --success-text: #065F46;
             --danger-bg: #FEE2E2;
             --danger-text: #991B1B;
+            --warning-bg: #FEF3C7;
+            --warning-text: #92400E;
         }
 
         * {
@@ -41,7 +43,7 @@
 
         .container {
             width: 100%;
-            max-width: 420px;
+            max-width: 440px;
         }
 
         .card {
@@ -60,12 +62,21 @@
         }
 
         h2 {
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             font-weight: 700;
             margin-bottom: 24px;
             text-align: center;
             color: var(--text-main);
             letter-spacing: -0.025em;
+        }
+
+        h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin: 20px 0 12px 0;
+            color: var(--primary);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 6px;
         }
 
         .form-group {
@@ -74,37 +85,58 @@
 
         label {
             display: block;
-            font-size: 0.875rem;
+            font-size: 0.85rem;
             font-weight: 500;
             margin-bottom: 8px;
             color: var(--text-main);
         }
 
         .input-wrapper {
-            position: relative;
+            display: flex;
+            align-items: center;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background-color: #fff;
+            transition: all 0.2s ease;
+            overflow: hidden;
+        }
+
+        .input-wrapper:focus-within {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
         }
 
         .input-prefix {
-            position: absolute;
-            left: 12px;
-            top: 50%;
-            transform: translateY(-50%);
+            padding-left: 12px;
             color: var(--text-muted);
             font-weight: 500;
+            white-space: nowrap;
         }
 
-        input[type="number"] {
+        input[type="number"], select {
             width: 100%;
-            padding: 12px 12px 12px 28px;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            font-size: 1rem;
-            background-color: #fff;
-            transition: all 0.2s ease;
+            padding: 12px 12px 12px 8px;
+            border: none;
+            font-size: 0.95rem;
+            background-color: transparent;
             outline: none;
         }
 
-        input[type="number"]:focus {
+        select {
+            padding-left: 12px;
+            appearance: none;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 16px;
+            cursor: pointer;
+            background-color: #fff;
+            transition: all 0.2s ease;
+        }
+
+        select:focus {
             border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
         }
@@ -125,7 +157,7 @@
             font-weight: 600;
             cursor: pointer;
             transition: background-color 0.2s ease, transform 0.1s ease;
-            margin-top: 8px;
+            margin-top: 12px;
             box-shadow: 0 4px 6px rgba(79, 70, 229, 0.2);
         }
 
@@ -145,12 +177,22 @@
             line-height: 1.5;
             display: none;
             animation: fadeIn 0.4s ease-out;
+            background-color: #fff;
+            border: 1px solid var(--border);
         }
 
         .result-row {
             display: flex;
             justify-content: space-between;
             margin-bottom: 8px;
+        }
+
+        .result-row.aduanas-sec {
+            font-size: 0.85em;
+            padding-left: 12px;
+            border-left: 2px solid currentColor;
+            opacity: 0.9;
+            margin-bottom: 4px;
         }
 
         .result-row.total {
@@ -169,6 +211,7 @@
             align-items: center;
             justify-content: center;
             gap: 6px;
+            font-size: 0.9em;
         }
 
         @keyframes fadeIn {
@@ -176,10 +219,22 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        .row {
+            display: flex;
+            gap: 12px;
+        }
+        .row .form-group {
+            flex: 1;
+        }
+
         /* Responsive */
         @media (max-width: 480px) {
             .card {
                 padding: 24px 20px;
+            }
+            .row {
+                flex-direction: column;
+                gap: 0;
             }
         }
     </style>
@@ -188,7 +243,7 @@
 
 <div class="container">
     <div class="card">
-        <h2>Calculadora de Impuestos (FL 7%)</h2>
+        <h2>Calculadora de Pedidos</h2>
         
         <div class="form-group">
             <label for="precio">Precio del artículo</label>
@@ -199,55 +254,205 @@
         </div>
 
         <div class="form-group">
-            <label for="envio">Costo de envío (Opcional)</label>
+            <label for="envio">Costo de envío a Miami (Opcional)</label>
             <div class="input-wrapper">
                 <span class="input-prefix">$</span>
                 <input type="number" id="envio" placeholder="0.00" min="0" step="0.01">
             </div>
         </div>
 
-        <button onclick="calcular()">Calcular Total</button>
+        <h3>📦 Envío a República Dominicana</h3>
+
+        <div class="form-group">
+            <label for="courier">Courier (Cálculo de Flete y Aduanas)</label>
+            <select id="courier" onchange="toggleCourierFields()">
+                <option value="none">Solo comprar (Sin Importar a RD)</option>
+                <option value="bmcargo">BM Cargo (RD$275/Lb sin redondear)</option>
+                <option value="eps">EPS (RD$320/Lb - Rebaja >5Lbs)</option>
+            </select>
+        </div>
+
+        <div id="courier-fields" style="display: none;">
+            <div class="form-group">
+                <label for="peso">Peso del paquete (Libras)</label>
+                <div class="input-wrapper">
+                    <span class="input-prefix" style="font-size:12px;">Lb</span>
+                    <input type="number" id="peso" placeholder="0.0" min="0" step="0.1">
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="form-group">
+                    <label for="tasa">Tasa del Dólar</label>
+                    <div class="input-wrapper">
+                        <span class="input-prefix">RD$</span>
+                        <input type="number" id="tasa" value="59.50" min="0" step="0.1">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; user-select: none;">
+                        <input type="checkbox" id="aplicar-arancel" onchange="toggleArancelInput()" checked style="width: 16px; height: 16px; margin: 0;">
+                        Calcular Arancel (%)
+                    </label>
+                    <div class="input-wrapper" id="arancel-wrapper" style="margin-top: 8px;">
+                        <span class="input-prefix">%</span>
+                        <input type="number" id="arancel" value="20" min="0" step="1">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button onclick="calcular()">Calcular Total a Pagar</button>
         
         <div id="resultado"></div>
     </div>
 </div>
 
 <script>
+    function toggleArancelInput() {
+        const checkArancel = document.getElementById('aplicar-arancel');
+        const wrapArancel = document.getElementById('arancel-wrapper');
+        if (checkArancel.checked) {
+            wrapArancel.style.display = 'flex';
+        } else {
+            wrapArancel.style.display = 'none';
+        }
+    }
+
+    function toggleCourierFields() {
+        const courier = document.getElementById('courier').value;
+        const fields = document.getElementById('courier-fields');
+        if (courier === 'none') {
+            fields.style.display = 'none';
+        } else {
+            fields.style.display = 'block';
+        }
+    }
+
     function calcular() {
-        // Obtener valores y manejar campos vacíos
-        const precioInput = document.getElementById('precio').value;
-        const envioInput = document.getElementById('envio').value;
-        
-        const precio = parseFloat(precioInput) || 0;
-        const envio = parseFloat(envioInput) || 0;
+        // Obtener valores
+        const precio = parseFloat(document.getElementById('precio').value) || 0;
+        const envio = parseFloat(document.getElementById('envio').value) || 0;
+        const courier = document.getElementById('courier').value;
+        const peso = parseFloat(document.getElementById('peso').value) || 0;
+        const tasa = parseFloat(document.getElementById('tasa').value) || 59;
+        const checkArancel = document.getElementById('aplicar-arancel');
+        const arancelPerc = checkArancel.checked ? (parseFloat(document.getElementById('arancel').value) || 0) : 0;
 
         if (precio === 0 && envio === 0) {
-            return; // No hacer nada si ambos están vacíos
+            return;
         }
 
-        // Calcula la base para el impuesto (Precio + Envío)
-        const subtotal = precio + envio;
-        const impuesto = subtotal * 0.07;
-        const total = subtotal + impuesto;
+        // --- CÁLCULO USA ---
+        const subtotalUSA = precio + envio;
+        const impuestoUSA = subtotalUSA * 0.07; // Tax FL
+        const totalUSA = subtotalUSA + impuestoUSA;
 
+        // --- CÁLCULO FLETE COURIER ---
+        let fleteUSD = 0;
+        let fleteInfo = '';
+        
+        if (courier === 'bmcargo') {
+            // BMCargo: RD$ 275 por peso exacto sin redondear
+            let fleteRD = peso * 275;
+            fleteUSD = fleteRD / tasa;
+            
+            if (peso > 0) fleteInfo = `BM Cargo (${peso} Lbs)`;
+        } else if (courier === 'eps') {
+            // EPS: RD$ 320 por libra; Si es > 5 libras a RD$ 280
+            let fleteRD = 0;
+            if (peso > 0 && peso <= 5) {
+                fleteRD = peso * 320;
+            } else if (peso > 5) {
+                fleteRD = peso * 280;
+            }
+            
+            fleteUSD = fleteRD / tasa;
+            if (peso > 0) fleteInfo = `EPS (${peso} Lbs)`;
+        }
+
+        // --- CÁLCULO ADUANAS RD ---
+        let aduanasUSD = 0;
+        let aduanasInfoHtml = '';
+        let estadoHtml = '';
+        
+        // Evaluamos el límite de $200 en base al total de la factura (incluyendo taxes de FL)
+        // porque en muchos casos la aduana toma el monto final facturado.
+        const valorFactura = totalUSA; 
+        const limitExceeded = valorFactura >= 200;
+
+        if (courier !== 'none') {
+            if (limitExceeded) {
+                // Cálculo de impuestos de la DGA
+                // CIF (Costo, Seguro, Flete). Usamos Costo+Flete en base a la factura.
+                const cif = valorFactura + fleteUSD; 
+                const arancelUSD = cif * (arancelPerc / 100);
+                const itbisUSD = (cif + arancelUSD) * 0.18;
+                aduanasUSD = arancelUSD + itbisUSD;
+
+                let arancelRenderHtml = '';
+                if (checkArancel.checked) {
+                    arancelRenderHtml = `
+                    <div class="result-row aduanas-sec">
+                        <span>Arancel (+${arancelPerc}% CIF):</span>
+                        <span>$${arancelUSD.toFixed(2)}</span>
+                    </div>`;
+                }
+
+                aduanasInfoHtml = `
+                    ${arancelRenderHtml}
+                    <div class="result-row aduanas-sec">
+                        <span>ITBIS (+18%):</span>
+                        <span>$${itbisUSD.toFixed(2)}</span>
+                    </div>
+                `;
+
+                estadoHtml = `
+                    <div class="status-message">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                        PAGA IMPUESTOS ADUANALES (> $200)
+                    </div>`;
+            } else {
+                estadoHtml = `
+                    <div class="status-message">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        EXENTO DE ADUANAS (< $200)
+                    </div>`;
+            }
+        } else {
+            // Estilos solo para USA
+            if (limitExceeded) {
+                estadoHtml = `<div class="status-message">🚨 EXCEDES LÍMITE DE ADUANAS RD ($200)</div>`;
+            } else {
+                estadoHtml = `<div class="status-message">✅ DENTRO DEL LÍMITE DE ADUANAS RD ($200)</div>`;
+            }
+        }
+
+        const totalFinalUSD = totalUSA + fleteUSD + aduanasUSD;
+        const totalFinalRD = totalFinalUSD * tasa;
+
+        // Render UI Total
         const resDiv = document.getElementById('resultado');
         resDiv.style.display = 'block';
 
-        let estadoHtml = '';
-        if (total > 200) {
-            resDiv.style.backgroundColor = 'var(--danger-bg)';
-            resDiv.style.color = 'var(--danger-text)';
-            estadoHtml = `<div class="status-message">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                            EXCEDES LÍMITE DE ADUANAS.
-                          </div>`;
+        // Manejar el color de fondo para alertar unificadamente
+        if (limitExceeded) {
+             resDiv.style.backgroundColor = 'var(--danger-bg)';
+             resDiv.style.color = 'var(--danger-text)';
         } else {
-            resDiv.style.backgroundColor = 'var(--success-bg)';
-            resDiv.style.color = 'var(--success-text)';
-            estadoHtml = `<div class="status-message">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                            DENTRO DEL LÍMITE.
-                          </div>`;
+             resDiv.style.backgroundColor = 'var(--success-bg)';
+             resDiv.style.color = 'var(--success-text)';
+        }
+
+        let courierHtml = '';
+        if (courier !== 'none' && parseFloat(peso) > 0) {
+            courierHtml = `
+                <div class="result-row" style="margin-top:8px;">
+                    <span><strong>Flete ${fleteInfo}:</strong></span>
+                    <span><strong>$${fleteUSD.toFixed(2)} USD</strong></span>
+                </div>
+                ${aduanasInfoHtml}
+            `;
         }
 
         resDiv.innerHTML = `
@@ -257,17 +462,25 @@
             </div>
             ${envio > 0 ? `
             <div class="result-row">
-                <span>Costo de envío:</span>
+                <span>Envío a Miami:</span>
                 <span>$${envio.toFixed(2)} USD</span>
             </div>` : ''}
             <div class="result-row">
-                <span>Impuesto (7%):</span>
-                <span>$${impuesto.toFixed(2)} USD</span>
+                <span>Impuesto FL (7%):</span>
+                <span>$${impuestoUSA.toFixed(2)} USD</span>
             </div>
+            
+            ${courierHtml}
+            
             <div class="result-row total">
-                <span>Total a Pagar:</span>
-                <span>$${total.toFixed(2)} USD</span>
+                <span>Total Estimado (USD):</span>
+                <span>$${totalFinalUSD.toFixed(2)} USD</span>
             </div>
+            ${courier !== 'none' ? `
+            <div class="result-row total" style="border:none; margin-top:0; padding-top:4px; font-size:1.3rem;">
+                <span>Total (RD$):</span>
+                <span>RD$ ${totalFinalRD.toFixed(2)}</span>
+            </div>` : ''}
             ${estadoHtml}
         `;
     }
@@ -278,6 +491,9 @@
             calcular();
         }
     });
+
+    // Llamar un init
+    toggleCourierFields();
 </script>
 </body>
 </html>
