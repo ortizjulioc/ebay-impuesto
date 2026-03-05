@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Calculadora de Importación</title>
+    <style>
+        body { font-family: sans-serif; display: flex; justify-content: center; padding: 20px; }
+        .card { border: 1px solid #ccc; padding: 20px; border-radius: 8px; width: 300px; box-shadow: 2px 2px 10px #eee; }
+        input { width: 100%; padding: 8px; margin: 10px 0; box-sizing: border-box; }
+        button { width: 100%; padding: 10px; background: #007bff; color: white; border: none; cursor: pointer; }
+        #resultado { margin-top: 20px; padding: 10px; border-radius: 5px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h3>Calculadora de Impuestos (FL 7%)</h3>
+    <input type="number" id="precio" placeholder="Precio del artículo (USD)">
+    <button onclick="calcular()">Calcular Total</button>
+    <div id="resultado"></div>
+</div>
+
+<script>
+    function calcular() {
+        const precio = parseFloat(document.getElementById('precio').value);
+        const impuesto = precio * 0.07;
+        const total = precio + impuesto;
+        const resDiv = document.getElementById('resultado');
+
+        if (total > 200) {
+            resDiv.style.background = "#ffcccc";
+            resDiv.style.color = "#cc0000";
+            resDiv.innerHTML = `Total: $${total.toFixed(2)} USD<br>⚠️ EXCEDES LÍMITE DE ADUANAS.`;
+        } else {
+            resDiv.style.background = "#ccffcc";
+            resDiv.style.color = "#006600";
+            resDiv.innerHTML = `Total: $${total.toFixed(2)} USD<br>✅ DENTRO DEL LÍMITE.`;
+        }
+    }
+</script>
+</body>
+</html>
