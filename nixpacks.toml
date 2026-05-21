@@ -3,5 +3,8 @@ providers = ["staticfile"]
 [variables]
 PORT = "3003"
 
+[phases.setup]
+nixPkgs = ["nginx"]
+
 [start]
-cmd = "thttpd -D -p 3003"
+cmd = "nginx -g 'daemon off;'"
