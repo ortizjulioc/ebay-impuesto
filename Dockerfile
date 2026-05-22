@@ -8,5 +8,5 @@ COPY index.html .
 
 EXPOSE 3003
 
-# Cambiamos esto para forzar la escucha en 0.0.0.0
-CMD ["serve", "-l", "3003", "-b", "0.0.0.0"]
+# Sintaxis estándar para escuchar en 0.0.0.0 en el puerto 3003
+CMD ["serve", "-l", "3003", "0.0.0.0"]
