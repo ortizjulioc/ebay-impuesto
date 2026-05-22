@@ -1,5 +1,3 @@
-providers = ["staticfile"]
-
 [variables]
 PORT = "3003"
 
@@ -7,4 +5,4 @@ PORT = "3003"
 nixPkgs = ["nodejs_20"]
 
 [start]
-cmd = "npx serve -l 3003"
+cmd = "npx serve -l tcp://0.0.0.0:3003"
