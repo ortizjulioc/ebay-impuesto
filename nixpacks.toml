@@ -4,7 +4,7 @@ providers = ["staticfile"]
 PORT = "3003"
 
 [phases.setup]
-nixPkgs = ["nginx"]
+nixPkgs = ["nodejs_20"]
 
 [start]
-cmd = "nginx -g 'daemon off;'"
+cmd = "npx serve -l 3003"
