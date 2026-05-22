@@ -1,8 +1,0 @@
-[variables]
-PORT = "3003"
-
-[phases.setup]
-nixPkgs = ["nodejs_20"]
-
-[start]
-cmd = "npx serve -l tcp://0.0.0.0:3003"
